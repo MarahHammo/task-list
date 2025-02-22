@@ -1,15 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\UserController;
+
 
 Route::get('/', function () {
     return view('welcome');
 });
 
 // هناك 3 طرق لتوجيه البيانات من المتحكم للواجهة
-
-
 Route::get('/about', function () {
     $name = 'Marah';
     $departments = [
@@ -34,36 +34,33 @@ Route::post('/about', function () {
     return view('about' , compact('name'));
 });
 
+//Tasks Routes
 // لجلب البيانات من الداتابيز
-Route::get('tasks', function(){
-    $tasks = DB::table('tasks')->get();
-    return view('tasks', compact('tasks'));
-});
+Route::get('tasks', [TaskController::class , 'index']);
 
 // لاضافة المدخل الى الداتا البيز وتحديث الصفحة
-Route::post('create', function(){
-    $task_name = $_POST['name'];
-    DB::table('tasks')->insert(['name'=> $task_name]);
-    return redirect()->back();
-});
+Route::post('taskCreate', [TaskController::class , 'taskCreate']);
 
 // زر الحذف
-Route::post('delete/{id}' , function($id){
-    DB::table('tasks')->where('id' , $id)->delete();
-    return redirect()->back();
-});
+Route::post('taskDelete/{id}' ,  [TaskController::class , 'taskDelete']);
 
 // زر التعديل
-Route::post('edit/{id}' , function($id){
-    $task = DB::table('tasks')->where('id' , '=' ,$id)->first();
-    $tasks = DB::table('tasks')->get();
-    return view('tasks' , compact('task' , 'tasks'));
+Route::post('taskEdit/{id}' ,  [TaskController::class , 'taskEdit']);
+Route::post('taskUpdate' ,  [TaskController::class , 'taskUpdate']);
+
+
+
+
+Route::get('/app', function () {
+    return view('layouts.app');
 });
 
-Route::post('update' , function(){
-    $id = $_POST['id'];
-     DB::table('tasks')->where('id' , '=' ,$id)->update(['name' => $_POST['name']]);
-    return redirect('tasks');
-});
 
 
+
+//Users Routes
+Route::get('users', [UserController::class , 'index']);
+Route::post('userCreate', [UserController::class , 'userCreate']);
+Route::post('userDelete/{id}' ,  [UserController::class , 'userDelete']);
+Route::post('userEdit/{id}' ,  [UserController::class , 'userEdit']);
+Route::post('userUpdate' ,  [UserController::class , 'userUpdate']);
